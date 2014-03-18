@@ -3,7 +3,7 @@ package SymbleTable;
 public class RBTree<Key extends Comparable<Key>, Value>{
 
 	private static final boolean RED 	= true;
-	private static final boolean BLACK  = true;
+	private static final boolean BLACK  = false;
 	private class Node{
 		Key key;
 		Value val;
