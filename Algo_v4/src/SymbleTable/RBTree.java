@@ -32,7 +32,7 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 	}
 	
 	public boolean isEmpty(){
-		return size()==0;
+		return root == null;
 	}
 	
 	public int size(Node x){
@@ -120,9 +120,9 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 	
 	//if both of h's children are red, make them black and h red
 	private void flipColors(Node h){
-		h.color = RED;
-		h.left.color = BLACK;
-		h.right.color = BLACK;
+		 h.color = !h.color;
+	     h.left.color = !h.left.color;
+	     h.right.color = !h.right.color;
 	}
 	
 	//get the value of the key
@@ -154,7 +154,7 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 		else if(cmp > 0)	h.right = put(h.right, key, val);
 		else h.val = val;
 		
-		if(isRed(h.right) && !!isRed(h.left)) 	h = rotateLeft(h);
+		if(isRed(h.right) && !isRed(h.left)) 	h = rotateLeft(h);
 		if(isRed(h.left) && isRed(h.left.left))	h = rotateRight(h);
 		if(isRed(h.left) && isRed(h.right))		flipColors(h);
 		
@@ -162,7 +162,9 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 		return h;
 	}
 
-	//
+	/*if h is Red, h.left and h.left.left is Black
+	 *make h.left or one of its children red.
+	 */
 	private Node moveRedLeft(Node h){
 		flipColors(h);
 		if(isRed(h.right.left)){
@@ -172,28 +174,56 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 		return h;
 	}
 	
+	/*if h is Red and both h.right and h.right.left are Black
+	 * make h.right or one of its children red
+	 */
 	private Node moveRedRight(Node h){
 		flipColors(h);
 		if(isRed(h.left.left))
 			h = rotateRight(h);
 		return h;
 	}
-	
+
+	// delete the key-value pair with the minimum key
 	public void deleteMin(){
 		if(!isRed(root.left) && !isRed(root.right))
 			root.color = RED;
 		root = deleteMin(root);
 		if(!isEmpty())	root.color = BLACK;
 	}
-	
+
+    // delete the key-value pair with the minimum key rooted at h
 	private Node deleteMin(Node h){
 		if(h.left == null)
 			return null;
 		if(!isRed(h.left) && !isRed(h.left.left))
 			h = moveRedLeft(h);
+		h.left = deleteMin(h.left);
 		return balance(h);
 	}
 	
+	 // delete the key-value pair with the maximum key
+    public void deleteMax() {
+        if (!isRed(root.left) && !isRed(root.right))
+            root.color = RED;
+        root = deleteMax(root);
+        if (!isEmpty()) root.color = BLACK;
+    }
+
+    // delete the key-value pair with the maximum key rooted at h
+    private Node deleteMax(Node h) { 
+        if (isRed(h.left))
+            h = rotateRight(h);
+
+        if (h.right == null)
+            return null;
+        if (!isRed(h.right) && !isRed(h.right.left))
+            h = moveRedRight(h);
+        h.right = deleteMax(h.right);
+        return balance(h);
+    }
+	
+	//balance the tree rooted h
 	private Node balance(Node h){
 		if(isRed(h.right)) h = rotateLeft(h);
 		if(isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
@@ -225,8 +255,9 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 				h = moveRedRight(h);
 			
 			if(key.compareTo(h.key) == 0){
-				h.val = get(h.right, min(h.right).key);
-				h.key = min(h.right).key;
+				Node x = min(h.right);
+				h.val = x.val;
+				h.key = x.key;
 				h.right = deleteMin(h.right);
 			}
 			else
