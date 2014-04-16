@@ -14,7 +14,6 @@ public class RBTree<Key extends Comparable<Key>, Value>{
 		Node(Key key, Value val, int N, boolean color){
 			this.key   = key;
 			this.val   = val;
-			this.N     = N;
 			this.color = color;
 		}
 	
