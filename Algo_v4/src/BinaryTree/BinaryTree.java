@@ -117,8 +117,8 @@ public class BinaryTree{
 			 * do something with h
 			 */
 			tmp.visit();
-			if(tmp.getLeft() != null) s.push(tmp.getLeft());
 			if(tmp.getRight() != null) s.push(tmp.getRight());
+			if(tmp.getLeft() != null) s.push(tmp.getLeft());
 		}
 	}
 	
